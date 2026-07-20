@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getFeedsApi } from '@api';
+import { getFeedsApi, getOrderByNumberApi } from '@api';
 import type { TOrder } from '@utils-types';
 import type { RootState } from '../store';
 
@@ -10,6 +10,10 @@ type TFeedState = {
   totalToday: number;
   isLoading: boolean;
   error: string | null;
+
+  orderData: TOrder | null;
+  orderDataLoading: boolean;
+  orderDataError: string | null;
 };
 
 const initialState: TFeedState = {
@@ -17,11 +21,29 @@ const initialState: TFeedState = {
   total: 0,
   totalToday: 0,
   isLoading: false,
-  error: null
+  error: null,
+
+  orderData: null,
+  orderDataLoading: false,
+  orderDataError: null
 };
 
 export const getFeeds = createAsyncThunk('feed/getFeeds', async () =>
   getFeedsApi()
+);
+
+export const getOrderByNumber = createAsyncThunk<TOrder, number>(
+  'feed/getOrderByNumber',
+  async (number) => {
+    const response = await getOrderByNumberApi(number);
+    const order = response.orders[0];
+
+    if (!order) {
+      throw new Error('Заказ не найден');
+    }
+
+    return order;
+  }
 );
 
 const feedSlice = createSlice({
@@ -43,6 +65,19 @@ const feedSlice = createSlice({
       .addCase(getFeeds.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message || 'Ошибка загрузки ленты заказов';
+      })
+      .addCase(getOrderByNumber.pending, (state) => {
+        state.orderDataLoading = true;
+        state.orderDataError = null;
+        state.orderData = null;
+      })
+      .addCase(getOrderByNumber.fulfilled, (state, action) => {
+        state.orderDataLoading = false;
+        state.orderData = action.payload;
+      })
+      .addCase(getOrderByNumber.rejected, (state, action) => {
+        state.orderDataLoading = false;
+        state.orderDataError = action.error.message || 'Ошибка загрузки заказа';
       });
   }
 });
@@ -56,5 +91,13 @@ export const selectFeedTotalToday = (state: RootState) => state.feed.totalToday;
 export const selectFeedLoading = (state: RootState) => state.feed.isLoading;
 
 export const selectFeedError = (state: RootState) => state.feed.error;
+
+export const selectOrderData = (state: RootState) => state.feed.orderData;
+
+export const selectOrderDataLoading = (state: RootState) =>
+  state.feed.orderDataLoading;
+
+export const selectOrderDataError = (state: RootState) =>
+  state.feed.orderDataError;
 
 export const feedReducer = feedSlice.reducer;

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import type { Location } from 'react-router-dom';
 
 import {
   ConstructorPage,
@@ -17,7 +18,7 @@ import '../../index.css';
 
 import styles from './app.module.css';
 
-import { AppHeader, IngredientDetails, Modal } from '@components';
+import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 import { Preloader } from '@ui';
 
 import {
@@ -75,6 +76,7 @@ const App = () => {
       <Routes location={background || location}>
         <Route path='/' element={constructorPage} />
         <Route path='/feed' element={<Feed />} />
+        <Route path='/feed/:number' element={<OrderInfo />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
         <Route path='/forgot-password' element={<ForgotPassword />} />
@@ -93,6 +95,15 @@ const App = () => {
             element={
               <Modal title='Детали ингредиента' onClose={handleModalClose}>
                 <IngredientDetails />
+              </Modal>
+            }
+          />
+
+          <Route
+            path='/feed/:number'
+            element={
+              <Modal title='Детали заказа' onClose={handleModalClose}>
+                <OrderInfo />
               </Modal>
             }
           />
