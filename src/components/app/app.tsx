@@ -13,27 +13,52 @@ import {
   NotFound404
 } from '@pages';
 
-import { AppHeader } from '@components';
-
-import { getIngredients } from '../../services/slices/ingredientsSlice';
-import { useDispatch } from '../../services/store';
-
 import '../../index.css';
+
 import styles from './app.module.css';
+
+import { AppHeader } from '@components';
+import { Preloader } from '@ui';
+
+import {
+  getIngredients,
+  selectIngredients,
+  selectIngredientsError,
+  selectIngredientsLoading
+} from '../../services/slices/ingredientsSlice';
+import { useDispatch, useSelector } from '../../services/store';
 
 const App = () => {
   const dispatch = useDispatch();
 
+  const isIngredientsLoading = useSelector(selectIngredientsLoading);
+  const ingredients = useSelector(selectIngredients);
+  const error = useSelector(selectIngredientsError);
+
   useEffect(() => {
     dispatch(getIngredients());
   }, [dispatch]);
+
+  const constructorPage = isIngredientsLoading ? (
+    <Preloader />
+  ) : error ? (
+    <div className={`${styles.error} text text_type_main-medium pt-4`}>
+      {error}
+    </div>
+  ) : ingredients.length > 0 ? (
+    <ConstructorPage />
+  ) : (
+    <div className={`${styles.title} text text_type_main-medium pt-4`}>
+      Нет ингредиентов
+    </div>
+  );
 
   return (
     <div className={styles.app}>
       <AppHeader />
 
       <Routes>
-        <Route path='/' element={<ConstructorPage />} />
+        <Route path='/' element={constructorPage} />
         <Route path='/feed' element={<Feed />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
