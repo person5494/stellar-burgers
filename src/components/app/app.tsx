@@ -27,6 +27,7 @@ import {
   selectIngredientsError,
   selectIngredientsLoading
 } from '../../services/slices/ingredientsSlice';
+import { checkUserAuth } from '../../services/slices/userSlice';
 
 import { useDispatch, useSelector } from '../../services/store';
 
@@ -49,6 +50,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(getIngredients());
+    dispatch(checkUserAuth());
   }, [dispatch]);
 
   const handleModalClose = () => {
