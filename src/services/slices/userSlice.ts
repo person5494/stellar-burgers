@@ -27,14 +27,20 @@ type TUserState = {
   user: TUser | null;
   isLoading: boolean;
   isAuthChecked: boolean;
-  error: string | null;
+
+  loginError: string | null;
+  registerError: string | null;
+  updateUserError: string | null;
 };
 
 const initialState: TUserState = {
   user: null,
   isLoading: false,
   isAuthChecked: false,
-  error: null
+
+  loginError: null,
+  registerError: null,
+  updateUserError: null
 };
 
 const getErrorMessage = (error: unknown) => {
@@ -88,26 +94,25 @@ export const loginUser = createAsyncThunk<
   }
 });
 
-export const checkUserAuth = createAsyncThunk<
-  TUser | null,
-  void,
-  { rejectValue: string }
->('user/checkUserAuth', async (_, { rejectWithValue }) => {
-  try {
-    const accessToken = getCookie('accessToken');
-    const refreshToken = localStorage.getItem('refreshToken');
+export const checkUserAuth = createAsyncThunk<TUser | null, void>(
+  'user/checkUserAuth',
+  async (_, { rejectWithValue }) => {
+    try {
+      const accessToken = getCookie('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken');
 
-    if (!accessToken && !refreshToken) {
-      return null;
+      if (!accessToken && !refreshToken) {
+        return null;
+      }
+
+      const response = await getUserApi();
+
+      return response.user;
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
-
-    const response = await getUserApi();
-
-    return response.user;
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
   }
-});
+);
 
 export const updateUser = createAsyncThunk<
   TUser,
@@ -141,43 +146,46 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    clearUserError: (state) => {
-      state.error = null;
+    clearUserErrors: (state) => {
+      state.loginError = null;
+      state.registerError = null;
+      state.updateUserError = null;
     }
   },
   extraReducers: (builder) => {
     builder
       .addCase(registerUser.pending, (state) => {
         state.isLoading = true;
-        state.error = null;
+        state.registerError = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthChecked = true;
         state.user = action.payload;
+        state.registerError = null;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isAuthChecked = true;
-        state.error = action.payload || 'Ошибка регистрации';
+        state.registerError = action.payload || 'Ошибка регистрации';
       })
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
-        state.error = null;
+        state.loginError = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthChecked = true;
         state.user = action.payload;
+        state.loginError = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isAuthChecked = true;
-        state.error = action.payload || 'Ошибка входа';
+        state.loginError = action.payload || 'Ошибка входа';
       })
       .addCase(checkUserAuth.pending, (state) => {
         state.isLoading = true;
-        state.error = null;
       })
       .addCase(checkUserAuth.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -191,27 +199,26 @@ const userSlice = createSlice({
       })
       .addCase(updateUser.pending, (state) => {
         state.isLoading = true;
-        state.error = null;
+        state.updateUserError = null;
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
+        state.updateUserError = null;
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload || 'Ошибка обновления данных пользователя';
+        state.updateUserError =
+          action.payload || 'Ошибка обновления данных пользователя';
       })
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.isAuthChecked = true;
-      })
-      .addCase(logoutUser.rejected, (state, action) => {
-        state.error = action.payload || 'Ошибка выхода';
       });
   }
 });
 
-export const { clearUserError } = userSlice.actions;
+export const { clearUserErrors } = userSlice.actions;
 
 export const selectUser = (state: RootState) => state.user.user;
 
@@ -220,6 +227,12 @@ export const selectUserLoading = (state: RootState) => state.user.isLoading;
 export const selectIsAuthChecked = (state: RootState) =>
   state.user.isAuthChecked;
 
-export const selectUserError = (state: RootState) => state.user.error;
+export const selectLoginError = (state: RootState) => state.user.loginError;
+
+export const selectRegisterError = (state: RootState) =>
+  state.user.registerError;
+
+export const selectUpdateUserError = (state: RootState) =>
+  state.user.updateUserError;
 
 export const userReducer = userSlice.reducer;

@@ -2,12 +2,17 @@ import { FC, SyntheticEvent, useEffect, useState } from 'react';
 
 import { ProfileUI } from '@ui-pages';
 
-import { selectUser, updateUser } from '../../services/slices/userSlice';
+import {
+  selectUser,
+  updateUser,
+  selectUpdateUserError
+} from '../../services/slices/userSlice';
 import { useDispatch, useSelector } from '../../services/store';
 
 export const Profile: FC = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
+  const updateUserError = useSelector(selectUpdateUserError);
 
   const [formValue, setFormValue] = useState({
     name: '',
@@ -72,6 +77,7 @@ export const Profile: FC = () => {
       handleCancel={handleCancel}
       handleSubmit={handleSubmit}
       handleInputChange={handleInputChange}
+      updateUserError={updateUserError || ''}
     />
   );
 };
