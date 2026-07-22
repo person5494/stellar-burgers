@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import type { Location } from 'react-router-dom';
 
+import { ProtectedRoute } from '../protected-route/protected-route';
+
 import {
   ConstructorPage,
   Feed,
@@ -79,12 +81,47 @@ const App = () => {
         <Route path='/' element={constructorPage} />
         <Route path='/feed' element={<Feed />} />
         <Route path='/feed/:number' element={<OrderInfo />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/register' element={<Register />} />
-        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route
+          path='/login'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <Login />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/register'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <Register />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/forgot-password'
+          element={
+            <ProtectedRoute onlyUnAuth>
+              <ForgotPassword />
+            </ProtectedRoute>
+          }
+        />
         <Route path='/reset-password' element={<ResetPassword />} />
-        <Route path='/profile' element={<Profile />} />
-        <Route path='/profile/orders' element={<ProfileOrders />} />
+        <Route
+          path='/profile'
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/profile/orders'
+          element={
+            <ProtectedRoute>
+              <ProfileOrders />
+            </ProtectedRoute>
+          }
+        />
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
         <Route path='/404' element={<NotFound404 />} />
         <Route path='*' element={<NotFound404 />} />
