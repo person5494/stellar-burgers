@@ -30,8 +30,8 @@ export const Profile: FC = () => {
   }
 
   const isFormChanged =
-    formValue.name !== user?.name ||
-    formValue.email !== user?.email ||
+    formValue.name !== user.name ||
+    formValue.email !== user.email ||
     !!formValue.password;
 
   const handleSubmit = (e: SyntheticEvent) => {
@@ -74,6 +74,4 @@ export const Profile: FC = () => {
       handleInputChange={handleInputChange}
     />
   );
-
-  return null;
 };

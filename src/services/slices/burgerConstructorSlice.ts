@@ -7,14 +7,13 @@ import {
 
 import { orderBurgerApi } from '@api';
 
-import type { TIngredient, TConstructorIngredient, TOrder } from '@utils-types';
+import type {
+  TIngredient,
+  TConstructorIngredient,
+  TConstructorItems
+} from '@utils-types';
 
 import type { RootState } from '../store';
-
-type TConstructorItems = {
-  bun: TIngredient | null;
-  ingredients: TConstructorIngredient[];
-};
 
 type TOrderModalData = {
   number: number;
