@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-import { getFeedsApi, getOrderByNumberApi } from '@api';
+import { getFeedsApi, getOrderByNumberApi, getOrdersApi } from '@api';
 import type { TOrder } from '@utils-types';
 import type { RootState } from '../store';
 
@@ -14,6 +14,10 @@ type TFeedState = {
   orderData: TOrder | null;
   orderDataLoading: boolean;
   orderDataError: string | null;
+
+  userOrders: TOrder[];
+  userOrdersLoading: boolean;
+  userOrdersError: string | null;
 };
 
 const initialState: TFeedState = {
@@ -25,11 +29,19 @@ const initialState: TFeedState = {
 
   orderData: null,
   orderDataLoading: false,
-  orderDataError: null
+  orderDataError: null,
+
+  userOrders: [],
+  userOrdersLoading: false,
+  userOrdersError: null
 };
 
 export const getFeeds = createAsyncThunk('feed/getFeeds', async () =>
   getFeedsApi()
+);
+
+export const getUserOrders = createAsyncThunk('feed/getUserOrders', async () =>
+  getOrdersApi()
 );
 
 export const getOrderByNumber = createAsyncThunk<TOrder, number>(
@@ -66,6 +78,21 @@ const feedSlice = createSlice({
         state.isLoading = false;
         state.error = action.error.message || 'Ошибка загрузки ленты заказов';
       })
+
+      .addCase(getUserOrders.pending, (state) => {
+        state.userOrdersLoading = true;
+        state.userOrdersError = null;
+      })
+      .addCase(getUserOrders.fulfilled, (state, action) => {
+        state.userOrdersLoading = false;
+        state.userOrders = [...action.payload].reverse();
+      })
+      .addCase(getUserOrders.rejected, (state, action) => {
+        state.userOrdersLoading = false;
+        state.userOrdersError =
+          action.error.message || 'Ошибка загрузки истории заказов';
+      })
+
       .addCase(getOrderByNumber.pending, (state) => {
         state.orderDataLoading = true;
         state.orderDataError = null;
@@ -99,5 +126,13 @@ export const selectOrderDataLoading = (state: RootState) =>
 
 export const selectOrderDataError = (state: RootState) =>
   state.feed.orderDataError;
+
+export const selectUserOrders = (state: RootState) => state.feed.userOrders;
+
+export const selectUserOrdersLoading = (state: RootState) =>
+  state.feed.userOrdersLoading;
+
+export const selectUserOrdersError = (state: RootState) =>
+  state.feed.userOrdersError;
 
 export const feedReducer = feedSlice.reducer;
