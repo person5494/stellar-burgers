@@ -85,7 +85,7 @@ const feedSlice = createSlice({
       })
       .addCase(getUserOrders.fulfilled, (state, action) => {
         state.userOrdersLoading = false;
-        state.userOrders = [...action.payload].reverse();
+        state.userOrders = action.payload;
       })
       .addCase(getUserOrders.rejected, (state, action) => {
         state.userOrdersLoading = false;
