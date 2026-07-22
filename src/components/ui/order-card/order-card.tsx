@@ -42,7 +42,7 @@ export const OrderCardUI: FC<OrderCardUIProps> = memo(
         >
           {orderInfo.name}
         </h4>
-        {location.pathname === '/profile/orders' && (
+        {location.pathname.startsWith('/profile/orders') && (
           <OrderStatus status={orderInfo.status} />
         )}
         <div className={clsx('pt-6', styles.order_content)}>

@@ -1,5 +1,4 @@
 import { FC, SyntheticEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import { RegisterUI } from '@ui-pages';
 
@@ -8,7 +7,6 @@ import { useDispatch, useSelector } from '../../services/store';
 
 export const Register: FC = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const error = useSelector(selectUserError);
 
@@ -27,8 +25,6 @@ export const Register: FC = () => {
           password
         })
       ).unwrap();
-
-      navigate('/');
     } catch {}
   };
 
