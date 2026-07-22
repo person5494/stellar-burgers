@@ -16,6 +16,8 @@ import {
   NotFound404
 } from '@pages';
 
+import clsx from 'clsx';
+
 import '../../index.css';
 
 import styles from './app.module.css';
@@ -62,13 +64,17 @@ const App = () => {
   const constructorPage = isIngredientsLoading ? (
     <Preloader />
   ) : error ? (
-    <div className={`${styles.error} text text_type_main-medium pt-4`}>
+    <div
+      className={clsx(styles.error, 'text', 'text_type_main-medium', 'pt-4')}
+    >
       {error}
     </div>
   ) : ingredients.length > 0 ? (
     <ConstructorPage />
   ) : (
-    <div className={`${styles.title} text text_type_main-medium pt-4`}>
+    <div
+      className={clsx(styles.title, 'text', 'text_type_main-medium', 'pt-4')}
+    >
       Нет ингредиентов
     </div>
   );

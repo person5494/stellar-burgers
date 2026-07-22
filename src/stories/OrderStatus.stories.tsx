@@ -1,4 +1,3 @@
-import React from 'react';
 import { OrderStatusUI } from '@ui';
 import type { Meta, StoryObj } from '@storybook/react';
 
