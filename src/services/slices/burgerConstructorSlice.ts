@@ -1,4 +1,11 @@
-import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSlice,
+  nanoid,
+  type PayloadAction
+} from '@reduxjs/toolkit';
+
+import { orderBurgerApi } from '@api';
 
 import type { TIngredient, TConstructorIngredient, TOrder } from '@utils-types';
 
@@ -9,10 +16,15 @@ type TConstructorItems = {
   ingredients: TConstructorIngredient[];
 };
 
+type TOrderModalData = {
+  number: number;
+};
+
 type TBurgerConstructorState = {
   constructorItems: TConstructorItems;
   orderRequest: boolean;
-  orderModalData: TOrder | null;
+  orderModalData: TOrderModalData | null;
+  orderError: string | null;
 };
 
 type TMoveIngredientPayload = {
@@ -26,8 +38,20 @@ const initialState: TBurgerConstructorState = {
     ingredients: []
   },
   orderRequest: false,
-  orderModalData: null
+  orderModalData: null,
+  orderError: null
 };
+
+export const createOrder = createAsyncThunk<TOrderModalData, string[]>(
+  'burgerConstructor/createOrder',
+  async (ingredientIds) => {
+    const response = await orderBurgerApi(ingredientIds);
+
+    return {
+      number: response.order.number
+    };
+  }
+);
 
 const burgerConstructorSlice = createSlice({
   name: 'burgerConstructor',
@@ -82,12 +106,42 @@ const burgerConstructorSlice = createSlice({
       }
 
       ingredients.splice(toIndex, 0, movedIngredient);
+    },
+    clearOrderModalData: (state) => {
+      state.orderModalData = null;
+      state.orderError = null;
     }
+  },
+
+  extraReducers: (builder) => {
+    builder
+      .addCase(createOrder.pending, (state) => {
+        state.orderRequest = true;
+        state.orderModalData = null;
+        state.orderError = null;
+      })
+      .addCase(createOrder.fulfilled, (state, action) => {
+        state.orderRequest = false;
+        state.orderModalData = action.payload;
+
+        state.constructorItems = {
+          bun: null,
+          ingredients: []
+        };
+      })
+      .addCase(createOrder.rejected, (state, action) => {
+        state.orderRequest = false;
+        state.orderError = action.error.message || 'Не удалось оформить заказ';
+      });
   }
 });
 
-export const { addIngredient, removeIngredient, moveIngredient } =
-  burgerConstructorSlice.actions;
+export const {
+  addIngredient,
+  removeIngredient,
+  moveIngredient,
+  clearOrderModalData
+} = burgerConstructorSlice.actions;
 
 export const selectConstructorItems = (state: RootState) =>
   state.burgerConstructor.constructorItems;
@@ -97,5 +151,8 @@ export const selectOrderRequest = (state: RootState) =>
 
 export const selectOrderModalData = (state: RootState) =>
   state.burgerConstructor.orderModalData;
+
+export const selectOrderError = (state: RootState) =>
+  state.burgerConstructor.orderError;
 
 export const burgerConstructorReducer = burgerConstructorSlice.reducer;
