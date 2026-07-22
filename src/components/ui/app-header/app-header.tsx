@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 import { TAppHeaderUIProps } from './type';
 
@@ -17,7 +17,14 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
   <header className={styles.header}>
     <nav className={clsx(styles.menu, 'p-4')}>
       <div className={styles.menu_part_left}>
-        <NavLink to='/' className={styles.link}>
+        <NavLink
+          to='/'
+          className={({ isActive }) =>
+            clsx(styles.link, {
+              [styles.link_active]: isActive
+            })
+          }
+        >
           {({ isActive }) => (
             <>
               <BurgerIcon type={isActive ? 'primary' : 'secondary'} />
@@ -36,7 +43,14 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
           )}
         </NavLink>
 
-        <NavLink to='/feed' className={styles.link}>
+        <NavLink
+          to='/feed'
+          className={({ isActive }) =>
+            clsx(styles.link, {
+              [styles.link_active]: isActive
+            })
+          }
+        >
           {({ isActive }) => (
             <>
               <ListIcon type={isActive ? 'primary' : 'secondary'} />
@@ -52,13 +66,17 @@ export const AppHeaderUI: FC<TAppHeaderUIProps> = ({ userName }) => (
         </NavLink>
       </div>
 
-      <NavLink to='/' className={styles.logo}>
+      <Link to='/' className={styles.logo}>
         <Logo className='' />
-      </NavLink>
+      </Link>
 
       <NavLink
         to='/profile'
-        className={clsx(styles.link, styles.link_position_last)}
+        className={({ isActive }) =>
+          clsx(styles.link, {
+            [styles.link_active]: isActive
+          })
+        }
       >
         {({ isActive }) => (
           <>
