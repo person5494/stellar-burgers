@@ -1,4 +1,3 @@
-import React from 'react';
 import { BurgerIngredientUI } from '@ui';
 import type { Meta, StoryObj } from '@storybook/react';
 
