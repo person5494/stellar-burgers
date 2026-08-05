@@ -56,3 +56,60 @@ test('добавляет соус в конструктор', async ({ page }) =
     constructor.getByText('Соус Spicy-X', { exact: true })
   ).toBeVisible();
 });
+
+test('открывает и закрывает модальное окно ингредиента', async ({ page }) => {
+  await page.routeFromHAR('./tests/fixtures/ingredients.har', {
+    url: '**/ingredients',
+    update: false
+  });
+
+  await page.goto('/');
+
+  const bunCard = page
+    .getByRole('listitem')
+    .filter({ hasText: 'Краторная булка N-200i' });
+
+  await bunCard.getByRole('link').click();
+
+  const modal = page.getByTestId('modal');
+
+  await expect(modal).toBeVisible();
+  await expect(
+    modal.getByText('Краторная булка N-200i', { exact: true })
+  ).toBeVisible();
+  await expect(modal.getByText('Калории, ккал', { exact: true })).toBeVisible();
+  await expect(modal.getByText('420', { exact: true })).toBeVisible();
+
+  await modal.getByRole('button', { name: 'Закрыть модальное окно' }).click();
+
+  await expect(modal).not.toBeVisible();
+});
+
+test('закрывает модальное окно по клику на оверлей', async ({ page }) => {
+  await page.routeFromHAR('./tests/fixtures/ingredients.har', {
+    url: '**/ingredients',
+    update: false
+  });
+
+  await page.goto('/');
+
+  const bunCard = page
+    .getByRole('listitem')
+    .filter({ hasText: 'Краторная булка N-200i' });
+
+  await bunCard.getByRole('link').click();
+
+  const modal = page.getByTestId('modal');
+  const overlay = page.getByTestId('modal-overlay');
+
+  await expect(modal).toBeVisible();
+
+  await overlay.click({
+    position: {
+      x: 10,
+      y: 10
+    }
+  });
+
+  await expect(modal).not.toBeVisible();
+});
