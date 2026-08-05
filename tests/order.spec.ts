@@ -1,7 +1,4 @@
-import { test, expect } from '@playwright/test';
-
-import userData from './fixtures/user.json';
-import orderData from './fixtures/order.json';
+import { expect, test } from '@playwright/test';
 
 test.describe('Оформление заказа', () => {
   test('оформляет заказ и очищает конструктор', async ({ page }) => {
@@ -10,30 +7,10 @@ test.describe('Оформление заказа', () => {
       document.cookie = 'accessToken=test-access-token';
     });
 
-    await page.routeFromHAR('./tests/fixtures/ingredients.har', {
-      url: '**/ingredients',
-      update: false
-    });
-
-    await page.route('**/auth/user', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(userData)
-      });
-    });
-
-    await page.route('**/orders', async (route) => {
-      if (route.request().method() !== 'POST') {
-        await route.continue();
-        return;
-      }
-
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(orderData)
-      });
+    await page.routeFromHAR('./tests/fixtures/order.har', {
+      url: '**/api/**',
+      update: false,
+      notFound: 'abort'
     });
 
     await page.goto('/');
