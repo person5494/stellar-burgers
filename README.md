@@ -1,19 +1,60 @@
-# Проектная работа 11-го спринта
+# Stellar Burgers
 
-[Макет](<https://www.figma.com/file/vIywAvqfkOIRWGOkfOnReY/React-Fullstack_-Проектные-задачи-(3-месяца)_external_link?type=design&node-id=0-1&mode=design>)
+Stellar Burgers is a React application where users can build a burger from available ingredients, place orders and follow order information.
 
-[Чеклист](https://www.notion.so/praktikum/0527c10b723d4873aa75686bad54b32e?pvs=4)
+The project focuses on application state, routing, authentication and interaction with an external API.
 
-## Этапы работы:
+## Features
 
-1. Разверните проект и ознакомьтесь с кодом. Все необходимые вам компоненты уже созданы и лежат в папке `src/components`
+- burger constructor with ingredients received from the API;
+- user registration and authentication;
+- protected routes for authenticated users;
+- user profile and order history;
+- order feed;
+- Redux-based application state;
+- API requests and asynchronous actions;
+- automatic tests for application behavior.
 
-2. Настройте роутинг.
+## Tech stack
 
-3. Напишите функционал запросов данных с сервера, используя `Redux` и глобальный `store`. Сами "ручки" уже прописаны и лежат в `utils/burger-api.ts`
+- React
+- TypeScript
+- Redux Toolkit
+- React Router
+- Webpack
+- Jest
+- React Testing Library
+- Playwright
+- Storybook
 
-4. Настройте авторизацию и создайте защищённые роуты.
+## Getting started
 
-## Важно:
+Clone the repository and install dependencies:
 
-Для корректной работы запросов к серверу необходимо добавить переменную BURGER_API_URL в окружение. Сама ссылка находится в файле `.env.example`.
+```bash
+git clone https://github.com/person5494/stellar-burgers.git
+cd stellar-burgers
+npm install
+```
+
+Create an `.env` file based on `.env.example` and provide the API URL required by the project.
+
+Start the development server:
+
+```bash
+npm start
+```
+
+## Useful commands
+
+```bash
+npm start
+npm run lint
+npm run test
+npm run test:playwright
+npm run storybook
+```
+
+## About the project
+
+This project was completed as part of the Yandex Practicum Frontend Developer course. The initial repository provided the UI components and project setup; my work focused on implementing the application logic, routing, state management, API interaction, authentication and related functionality.
